@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Renew: {{movie_instance.movie.title}}</h1>
+    <p>Borrower: {{movie_instance.borrower}}</p>
+    <p{% if movie_instance.is_overdue %} class="text-danger"{% endif %}>Due date: {{movie_instance.due_back}}</p>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        {{ form.as_table }}
+        </table>
+        <input type="submit" value="Submit" />
+    </form>
+{% endblock %}
