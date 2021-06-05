@@ -1,5 +1,6 @@
 from django.shortcuts import render
-
+import asyncio
+from time import sleep
 # Create your views here.
 
 from .models import Movie, Director, MovieInstance, Genre
@@ -92,15 +93,15 @@ from catalog.forms import RenewMovieForm
 
 @login_required
 @permission_required('catalog.can_mark_returned', raise_exception=True)
-def renew_movie_employer(request, pk):
+async def renew_movie_employer(request, pk):
     """View function for renewing a specific MovieInstance by employer."""
-    movie_instance = get_object_or_404(MovieInstance, pk=pk)
+    movie_instance = asyncio.create_task(get_object_or_404(MovieInstance, pk=pk))
 
     # If this is a POST request then process the Form data
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
-        form = RenewMovieForm(request.POST)
+        form = asyncio.create_task(RenewMovieForm(request.POST))
 
         # Check if the form is valid:
         if form.is_valid():
@@ -109,7 +110,7 @@ def renew_movie_employer(request, pk):
             movie_instance.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('all-borrowed'))
+            return await HttpResponseRedirect(reverse('all-borrowed'))
 
     # If this is a GET (or any other method) create the default form
     else:
@@ -117,11 +118,11 @@ def renew_movie_employer(request, pk):
         form = RenewMovieForm(initial={'renewal_date': proposed_renewal_date})
 
     context = {
-        'form': form,
-        'movie_instance': movie_instance,
+        'form': await form,
+        'movie_instance': await movie_instance,
     }
 
-    return render(request, 'catalog/movie_renew_employer.html', context)
+    return await render(request, 'catalog/movie_renew_employer.html', context)
 
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -138,7 +139,7 @@ class DirectorCreate(PermissionRequiredMixin, CreateView):
 
 class DirectorUpdate(PermissionRequiredMixin, UpdateView):
     model = Director
-    fields = '__all__' # Not recommended (potential security issue if more fields added)
+    fields = '__all__' 
     permission_required = 'catalog.can_mark_returned'
 
 
