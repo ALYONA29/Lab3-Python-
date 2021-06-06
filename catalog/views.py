@@ -84,7 +84,8 @@ class LoanedMoviesAllListView(PermissionRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         logger.info("Movies on loan")
-        return MovieInstance.objects.filter(status__exact='o').order_by('due_back')
+        #return MovieInstance.objects.filter(status__exact='o').order_by('due_back')
+        return MovieInstance.objects.select_related("movie").order_by('due_back')
 
 
 from django.shortcuts import get_object_or_404
