@@ -41,6 +41,7 @@ class Movie(models.Model):
     genre = models.ManyToManyField(Genre, help_text="Select a genre for this movie")
     # ManyToManyField used because a genre can contain many movies and a Movie can cover many genres.
     # Genre class has already been defined so we can specify the object above.
+    #country = models.ForeignKey('Country', on_delete=models.SET_NULL, null=True)
     country = models.ForeignKey('Country', on_delete=models.SET_NULL, null=True)
     
     class Meta:

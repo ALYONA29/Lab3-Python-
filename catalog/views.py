@@ -1,10 +1,12 @@
 from django.shortcuts import render
 import asyncio
+import logging
 from time import sleep
 # Create your views here.
 
 from .models import Movie, Director, MovieInstance, Genre
 
+logger = logging.getLogger(__name__)
 
 def index(request):
     """View function for home page of site."""
@@ -18,6 +20,8 @@ def index(request):
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 1)
     request.session['num_visits'] = num_visits+1
+
+    logger.info("Visit home page")
 
     # Render the HTML template index.html with the data in the context variable.
     return render(
@@ -64,6 +68,7 @@ class LoanedMoviesByUserListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        logger.info("Movies on loan")
         return MovieInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
 
 
@@ -78,6 +83,7 @@ class LoanedMoviesAllListView(PermissionRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        logger.info("Movies on loan")
         return MovieInstance.objects.filter(status__exact='o').order_by('due_back')
 
 
@@ -110,10 +116,12 @@ async def renew_movie_employer(request, pk):
             movie_instance.save()
 
             # redirect to a new URL:
+            logger.info("Renew movie")
             return await HttpResponseRedirect(reverse('all-borrowed'))
 
     # If this is a GET (or any other method) create the default form
     else:
+        logger.warning("Create the default form")
         proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
         form = RenewMovieForm(initial={'renewal_date': proposed_renewal_date})
 
