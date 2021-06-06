@@ -2,6 +2,17 @@ version: "3"
 
 services:
 
+  db:
+    image: mysql:5.7
+    ports:
+      - '5432:5432'
+    environment:
+      MYSQL_DATABASE: 'myDatabase'
+      MYSQL_USER: 'alyona'
+      MYSQL_PASSWORD: 'MamanJuly27'
+      MYSQL_ROOT_PASSWORD: 'MamanJuly27'
+    restart: always
+    
   server:
 
     build: .
@@ -12,3 +23,8 @@ services:
       - 8000:8000
 
     network_mode: host
+    
+    depends_on:
+      - db
+    volumes:
+      - ./myDatabase:/var/lib/mysql
