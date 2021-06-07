@@ -15,12 +15,14 @@ services:
     
   server:
 
-    build: .
+    #build: .
+
+    image: moviegallery_server
 
     command: python3 manage.py runserver
 
-    ports:
-      - 8000:8000
+    #ports:
+    #  - 8000:8000
 
     network_mode: host
     
