@@ -1,0 +1,21 @@
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <script>jQuery(document).ready(function () {
+                show('Error!', '{{ message }}');
+            });</script>
+        {% elif message.tags == 'success' %}
+            <script>jQuery(document).ready(function () {
+                show('Success!', '{{ message }}');
+            });</script>
+        {% elif message.tags == 'warning' %}
+            <script>jQuery(document).ready(function () {
+                show('Warning...', '{{ message }}');
+            });</script>
+        {% else %}
+            <script>jQuery(document).ready(function () {
+                show('Message', '{{ message }}');
+            });</script>
+        {% endif %}
+    {% endfor %}
+{% endif %}

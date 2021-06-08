@@ -1,4 +1,4 @@
-version: "3"
+version: "3.3"
 
 services:
 
@@ -11,22 +11,32 @@ services:
       MYSQL_USER: 'alyona'
       MYSQL_PASSWORD: 'MamanJuly27'
       MYSQL_ROOT_PASSWORD: 'MamanJuly27'
-    restart: always
+    volumes:
+      - ./data/db:/var/lib/mysql/data  
+    #restart: always
     
   server:
 
     #build: .
 
-    image: moviegallery_server
+    image: alyona29/moviegallery_server
 
-    command: python3 manage.py runserver
+    #command: python3 manage.py runserver
+    
+    command: bash -c "
+      sleep 5 &&
+      python3 manage.py migrate &&
+      python3 manage.py runserver"
 
-    #ports:
-    #  - 8000:8000
+    ports:
+      #- 8000:8000
+      - "8080:8080"
 
     network_mode: host
     
     depends_on:
       - db
     volumes:
-      - ./myDatabase:/var/lib/mysql
+      - .:/code
+    restart: always  
+      

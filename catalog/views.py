@@ -2,6 +2,7 @@ from django.shortcuts import render
 import asyncio
 import logging
 from time import sleep
+from threading import Thread
 # Create your views here.
 
 from .models import Movie, Director, MovieInstance, Genre
@@ -164,6 +165,12 @@ class MovieCreate(PermissionRequiredMixin, CreateView):
     fields = ['title', 'director', 'summary', 'isbn', 'genre', 'country']
     permission_required = 'catalog.can_mark_returned'
 
+def start_new_thread(function):
+    def decorator(*args, **kwargs):
+        t = Thread(target = function, args=args, kwargs=kwargs)
+        t.daemon = True
+        t.start()
+    return decorator
 
 class MovieUpdate(PermissionRequiredMixin, UpdateView):
     model = Movie
