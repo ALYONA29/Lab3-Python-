@@ -101,15 +101,15 @@ from catalog.forms import RenewMovieForm
 
 @login_required
 @permission_required('catalog.can_mark_returned', raise_exception=True)
-async def renew_movie_employer(request, pk):
+def renew_movie_employer(request, pk):
     """View function for renewing a specific MovieInstance by employer."""
-    movie_instance = asyncio.create_task(get_object_or_404(MovieInstance, pk=pk))
+    movie_instance = get_object_or_404(MovieInstance, pk=pk)
 
     # If this is a POST request then process the Form data
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
-        form = asyncio.create_task(RenewMovieForm(request.POST))
+        form = RenewMovieForm(request.POST)
 
         # Check if the form is valid:
         if form.is_valid():
@@ -119,7 +119,7 @@ async def renew_movie_employer(request, pk):
 
             # redirect to a new URL:
             logger.info("Renew movie")
-            return await HttpResponseRedirect(reverse('all-borrowed'))
+            return HttpResponseRedirect(reverse('all-borrowed'))
 
     # If this is a GET (or any other method) create the default form
     else:
@@ -128,12 +128,57 @@ async def renew_movie_employer(request, pk):
         form = RenewMovieForm(initial={'renewal_date': proposed_renewal_date})
 
     context = {
-        'form': await form,
-        'movie_instance': await movie_instance,
+        'form': form,
+        'movie_instance': movie_instance,
     }
 
-    return await render(request, 'catalog/movie_renew_employer.html', context)
+    return render(request, 'catalog/movie_renew_employer.html', context)
+    
 
+def start_new_thread(function):
+    def decorator(*args, **kwargs):
+        t = Thread(target = function, args=args, kwargs=kwargs)
+        t.daemon = True
+        t.start()
+    return decorator
+
+async def renew_movie_employer_async(request, pk):
+    """View function for renewing a specific MovieInstance by employer."""
+    movie_instance = get_object_or_404(MovieInstance, pk=pk)
+
+    await asyncio.sleep(3)
+
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = RenewMovieForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            movie_instance.due_back = form.cleaned_data['renewal_date']
+            movie_instance.save()
+
+            await asyncio.sleep(3)
+
+            # redirect to a new URL:
+            logger.info("Renew movie")
+            return HttpResponseRedirect(reverse('all-borrowed'))
+
+    # If this is a GET (or any other method) create the default form
+    else:
+        logger.warning("Create the default form")
+        await asyncio.sleep(3)
+        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
+        form = RenewMovieForm(initial={'renewal_date': proposed_renewal_date})
+
+    context = {
+        'form': form,
+        'movie_instance': movie_instance,
+    }
+
+    return render(request, 'catalog/movie_renew_employer.html', context)
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -165,12 +210,6 @@ class MovieCreate(PermissionRequiredMixin, CreateView):
     fields = ['title', 'director', 'summary', 'isbn', 'genre', 'country']
     permission_required = 'catalog.can_mark_returned'
 
-def start_new_thread(function):
-    def decorator(*args, **kwargs):
-        t = Thread(target = function, args=args, kwargs=kwargs)
-        t.daemon = True
-        t.start()
-    return decorator
 
 class MovieUpdate(PermissionRequiredMixin, UpdateView):
     model = Movie

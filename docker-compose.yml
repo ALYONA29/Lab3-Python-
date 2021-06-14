@@ -4,8 +4,6 @@ services:
 
   db:
     image: mysql:5.7
-    ports:
-      - '5432:5432'
     environment:
       MYSQL_DATABASE: 'myDatabase'
       MYSQL_USER: 'alyona'
@@ -13,24 +11,15 @@ services:
       MYSQL_ROOT_PASSWORD: 'MamanJuly27'
     volumes:
       - ./data/db:/var/lib/mysql/data  
-    #restart: always
     
   server:
 
-    #build: .
-
     image: alyona29/moviegallery_server
-
-    #command: python3 manage.py runserver
     
     command: bash -c "
       sleep 5 &&
       python3 manage.py migrate &&
-      python3 manage.py runserver"
-
-    ports:
-      #- 8000:8000
-      - "8080:8080"
+      python3 manage.py runserver 127.0.0.1:8080"
 
     network_mode: host
     
@@ -38,5 +27,4 @@ services:
       - db
     volumes:
       - .:/code
-    restart: always  
       
