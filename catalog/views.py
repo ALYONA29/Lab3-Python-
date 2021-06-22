@@ -4,8 +4,13 @@ import logging
 from time import sleep
 from threading import Thread
 # Create your views here.
+import threading
 
 from .models import Movie, Director, MovieInstance, Genre
+
+from django.conf import settings
+from django.core.mail import send_mail
+
 
 logger = logging.getLogger(__name__)
 
@@ -124,6 +129,13 @@ def renew_movie_employer(request, pk):
     # If this is a GET (or any other method) create the default form
     else:
         logger.warning("Create the default form")
+        
+        thread = threading.Thread(target=send_mail, args=(
+            'Django mail',
+            'This e-mail was sent with Django. Something wrong with movie form',
+            'alyonazapetskaya@mail.ru',
+            ['alyonazapetskaya@mail.ru']), kwargs={'fail_silently': False})
+        thread.start()
         proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
         form = RenewMovieForm(initial={'renewal_date': proposed_renewal_date})
 
