@@ -13,3 +13,5 @@ P. s. admin(user) - login: alyona, password: babulinkaninka46
 Host networking mode. The containers instead of running on their own ports, map their ports to the host environment/machine's ports
 
 Heroku: https://desolate-reaches-14426.herokuapp.com/catalog/
+
+Heroku admin panel: https://desolate-reaches-14426.herokuapp.com/admin/
