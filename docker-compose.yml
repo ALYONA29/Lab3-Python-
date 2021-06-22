@@ -14,8 +14,6 @@ services:
     
   server:
 
-    build: .
-
     image: alyona29/moviegallery_server
     
     command: bash -c "
