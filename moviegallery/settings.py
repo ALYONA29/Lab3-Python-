@@ -22,7 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag'
 import os
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+import my_config
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', my_config.SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
@@ -79,11 +80,11 @@ WSGI_APPLICATION = 'moviegallery.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-EMAIL_HOST = 'smtp.mail.ru'
-EMAIL_PORT = 2525
-EMAIL_HOST_USER = "alyonazapetskaya@mail.ru"
-EMAIL_HOST_PASSWORD = "password"
-EMAIL_USE_TLS = True
+EMAIL_HOST = my_config.EMAIL_HOST
+EMAIL_PORT = my_config.EMAIL_PORT
+EMAIL_HOST_USER = my_config.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = my_config.EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS = my_config.EMAIL_USE_TLS
 EMAIL_USE_SSL = False
 
 SERVER_EMAIL = EMAIL_HOST_USER
